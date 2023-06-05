@@ -2,54 +2,92 @@
 
 GLfloat angle = 0.0f;
 
-void renderScene() {
+void drawCube() {
+    // Küpün her bir yüzünün rengini belirleyelim
+    GLfloat colors[][3] = {
+        {1.0f, 0.0f, 0.0f}, // Kırmızı
+        {0.0f, 1.0f, 0.0f}, // Yeşil
+        {0.0f, 0.0f, 1.0f}, // Mavi
+        {1.0f, 1.0f, 0.0f}, // Sarı
+        {0.0f, 1.0f, 1.0f}, // Camgöbeği
+        {1.0f, 0.0f, 1.0f}  // Mor
+    };
+
+    glBegin(GL_QUADS);
+
+    // Her bir yüzün kenarlarını çizelim ve renklerini ayarlayalım
+    for (int i = 0; i < 6; i++) {
+        glColor3fv(colors[i]);
+        if (i == 0) {
+            glVertex3f(1.0f, 1.0f, -1.0f);
+            glVertex3f(-1.0f, 1.0f, -1.0f);
+            glVertex3f(-1.0f, 1.0f, 1.0f);
+            glVertex3f(1.0f, 1.0f, 1.0f);
+        } else if (i == 1) {
+            glVertex3f(1.0f, -1.0f, 1.0f);
+            glVertex3f(-1.0f, -1.0f, 1.0f);
+            glVertex3f(-1.0f, -1.0f, -1.0f);
+            glVertex3f(1.0f, -1.0f, -1.0f);
+        } else if (i == 2) {
+            glVertex3f(1.0f, 1.0f, 1.0f);
+            glVertex3f(-1.0f, 1.0f, 1.0f);
+            glVertex3f(-1.0f, -1.0f, 1.0f);
+            glVertex3f(1.0f, -1.0f, 1.0f);
+        } else if (i == 3) {
+            glVertex3f(1.0f, -1.0f, -1.0f);
+            glVertex3f(-1.0f, -1.0f, -1.0f);
+            glVertex3f(-1.0f, 1.0f, -1.0f);
+            glVertex3f(1.0f, 1.0f, -1.0f);
+        } else if (i == 4) {
+            glVertex3f(-1.0f, 1.0f, 1.0f);
+            glVertex3f(-1.0f, 1.0f, -1.0f);
+            glVertex3f(-1.0f, -1.0f, -1.0f);
+            glVertex3f(-1.0f, -1.0f, 1.0f);
+        } else if (i == 5) {
+            glVertex3f(1.0f, 1.0f, -1.0f);
+            glVertex3f(1.0f, 1.0f, 1.0f);
+            glVertex3f(1.0f, -1.0f, 1.0f);
+            glVertex3f(1.0f, -1.0f, -1.0f);
+        }
+    }
+
+    glEnd();
+}
+
+void display() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
+    glTranslatef(0.0f, 0.0f, -7.0f);
     glRotatef(angle, 1.0f, 1.0f, 1.0f);
-
-    // Köşe noktalarını tanımla
-    GLfloat vertices[] = {-0.5, -0.5, -0.5, // 0
-                           0.5, -0.5, -0.5, // 1
-                           0.5,  0.5, -0.5, // 2
-                          -0.5,  0.5, -0.5, // 3
-                          -0.5, -0.5,  0.5, // 4
-                           0.5, -0.5,  0.5, // 5
-                           0.5,  0.5,  0.5, // 6
-                          -0.5,  0.5,  0.5};// 7
-
-    // Yüzeyleri belirle
-    GLuint indices[] = {0, 1, 2, 3, // Ön yüz
-                        1, 5, 6, 2, // Sağ yüz
-                        4, 5, 6, 7, // Arka yüz
-                        0, 4, 7, 3, // Sol yüz
-                        0, 4, 5, 1, // Alt yüz
-                        3, 7, 6, 2};// Üst yüz
-
-    // Küpü çiz
-    glVertexPointer(3, GL_FLOAT, 0, vertices);
-    glEnableClientState(GL_VERTEX_ARRAY);
-
-    glDrawElements(GL_QUADS, 24, GL_UNSIGNED_INT, indices);
-
-    glDisableClientState(GL_VERTEX_ARRAY);
-
-    angle += 0.1f; // Küpü döndür
-
+    drawCube();
     glutSwapBuffers();
+}
+
+void reshape(int width, int height) {
+    glViewport(0, 0, (GLsizei)width, (GLsizei)height);
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    gluPerspective(45.0f, (GLfloat)width / (GLfloat)height, 0.1f, 100.0f);
+    glMatrixMode(GL_MODELVIEW);
+}
+
+void idle() {
+    angle += 0.1f;
+    if (angle > 360.0f) {
+        angle -= 360.0f;
+    }
+    glutPostRedisplay();
 }
 
 int main(int argc, char** argv) {
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
-    glutInitWindowSize(500, 500);
-    glutCreateWindow("Dönen Küp");
-
-    glutDisplayFunc(renderScene);
-    glutIdleFunc(renderScene);
+    glutInitWindowSize(800, 600);
+    glutCreateWindow("OpenGL Küp Örneği");
     glEnable(GL_DEPTH_TEST);
-
+    glutDisplayFunc(display);
+    glutReshapeFunc(reshape);
+    glutIdleFunc(idle);
     glutMainLoop();
-
     return 0;
 }
