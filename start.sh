@@ -12,6 +12,7 @@ g++ $dosya_adi -o $program_adi -lopengl32 -lglu32 -lglut32
 if [[ $? -eq 0 ]]; then
     echo "Derleme tamamlandı. Çalıştırılıyor..."
     ./$program_adi
+    rm "$program_adi.exe"
 else
     echo "Derleme hatası."
 fi
