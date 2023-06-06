@@ -18,7 +18,7 @@ void display()
 int main(int argc, char** argv)
 {
     glutInit(&argc, argv);
-    glutCreateWindow("opengl");
+    glutCreateWindow("Kare");
     glutDisplayFunc(display);
     glutMainLoop();
     return 0;
